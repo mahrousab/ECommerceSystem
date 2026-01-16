@@ -1,0 +1,8 @@
+﻿WebApplicationBuilder. The WebApplicationBuilder class is responsible
+for four main things:
+• Adding Configuration to the project by using the
+builder.Configuration property
+• Registering services in our app with the builder.Services
+property
+• Logging configuration with the builder.Logging property
+• Other IHostBuilder and IWebHostBuilder configuration
