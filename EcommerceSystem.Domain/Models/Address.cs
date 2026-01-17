@@ -1,3 +1,4 @@
+using Ecommerce.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace EcommerceSystem.Domain.Models;

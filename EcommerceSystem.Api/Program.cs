@@ -2,15 +2,22 @@ using AutoMapper;
 using Ecommerce.Api.DistributedCaching;
 using Ecommerce.Application.IRepository;
 using Ecommerce.Application.Repository;
+using Ecommerce.Domain.Models;
 using Ecommerce.Infrastructure.Repositories;
 using EcommerceSystem.Api.Extensions;
 using EcommerceSystem.Api.Middlewares;
 using EcommerceSystem.Application.DTOS;
+using EcommerceSystem.Domain.Models;
 using EcommerceSystem.Infrastructure.Data;
+using ECommerceSystem.Security.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +47,26 @@ builder.Services.AddAutoMapper(delegate (IMapperConfigurationExpression cfg)
 {
     cfg.AddProfile<MappingProfile>();
 });
+
+builder.Services.AddIdentity<User, IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<ECommerceSystemDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+    };
+});
+
 builder.Services.AddStackExchangeRedisCache(delegate (RedisCacheOptions options)
 {
     options.Configuration = "localhost:6379";
@@ -53,7 +80,7 @@ builder.Services.ConfigureCors();
 //Logging  
 builder.Host.UseSerilog();
 
- 
+
 
 Log.Logger=new LoggerConfiguration().WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Ecommerce.Domain.Models;
 using EcommerceSystem.Domain.Models;
 
 namespace EcommerceSystem.Application.DTOS;

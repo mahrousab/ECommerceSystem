@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EcommerceSystem.Application\EcommerceSystem.Application.csproj" />
     <ProjectReference Include="..\EcommerceSystem.Infrastructure\EcommerceSystem.Infrastructure.csproj" />
+    <ProjectReference Include="..\ECommerceSystem.Security\ECommerceSystem.Security.csproj" />
   </ItemGroup>
 
 </Project>

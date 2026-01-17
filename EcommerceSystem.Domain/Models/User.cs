@@ -1,25 +1,29 @@
+using EcommerceSystem.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace EcommerceSystem.Domain.Models;
+namespace Ecommerce.Domain.Models;
 
-public class User
+public class User : IdentityUser<Guid>
 {
-    [Required]
+    public ICollection<RefreshToken> RefreshTokens { get; set; }
+        = new List<RefreshToken>();
+
+
     public int Id { get; set; }
 
-	public string Name { get; set; }
+    public string Name { get; set; }
 
-	public string Email { get; set; }
+    public string Email { get; set; }
 
-	public string PasswordHash { get; set; }
+    public string PasswordHash { get; set; }
 
-	public string Phone { get; set; }
+    public string Phone { get; set; }
 
-	public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-	public ICollection<Order> Orders { get; set; }
+    public ICollection<Order> Orders { get; set; }
 
-	public ICollection<Address> Addresses { get; set; }
+    public ICollection<Address> Addresses { get; set; }
 }

@@ -1,4 +1,5 @@
 using Ecommerce.Application.IRepository;
+using Ecommerce.Domain.Models;
 using EcommerceSystem.Domain.Models;
 using EcommerceSystem.Infrastructure.Data;
 

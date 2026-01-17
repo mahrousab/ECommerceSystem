@@ -1,11 +1,15 @@
+using Ecommerce.Domain.Models;
 using EcommerceSystem.Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceSystem.Infrastructure.Data;
 
-public class ECommerceSystemDbContext : DbContext
+public class ECommerceSystemDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
-	public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<User> Users { get; set; }
 
 	public DbSet<Address> Addresses { get; set; }
 
