@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="EcommerceSystem.Api/EcommerceSystem.Api.csproj" />
   <Project Path="EcommerceSystem.Application/EcommerceSystem.Application.csproj" />
+  <Project Path="EcommerceSystem.BlazorServer/EcommerceSystem.BlazorServer.csproj" Id="eb840505-118d-45dd-b25f-3d713e237586" />
   <Project Path="EcommerceSystem.Domain/EcommerceSystem.Domain.csproj" />
   <Project Path="EcommerceSystem.Infrastructure/EcommerceSystem.Infrastructure.csproj" />
   <Project Path="ECommerceSystem.Security/ECommerceSystem.Security.csproj" Id="f8fb208c-ade3-4be7-9a64-7b87f1d2c383" />

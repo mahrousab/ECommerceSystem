@@ -24,7 +24,7 @@ public class ECommerceSystemDbContext : IdentityDbContext<User, IdentityRole<Gui
 	public DbSet<OrderItem> OrderItems { get; set; }
 
 	public DbSet<Payment> Payments { get; set; }
-
+	
 	public ECommerceSystemDbContext(DbContextOptions<ECommerceSystemDbContext> options)
 		: base(options)
 	{

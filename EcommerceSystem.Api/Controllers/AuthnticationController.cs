@@ -13,6 +13,7 @@ using RegisterRequest = EcommerceSystem.Application.Auth.RegisterRequest;
 
 namespace EcommerceSystem.Api.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthnticationController : ControllerBase

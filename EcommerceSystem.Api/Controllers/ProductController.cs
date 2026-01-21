@@ -1,16 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Api.DistributedCaching;
 using Ecommerce.Application.IRepository;
 using EcommerceSystem.Application.DTOS;
 using EcommerceSystem.Domain.Models;
+using ECommerceSystem.Security.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Ecommerce.Api.Controllers;
 
+[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin}")]
 [Route("api/[controller]")]
 [ApiController]
 public class ProductController : ControllerBase
@@ -30,8 +33,8 @@ public class ProductController : ControllerBase
 		_mapper = mapper;
 		_cache = cache;
 	}
-
-	[HttpGet("{id:int}")]
+    [AllowAnonymous]
+    [HttpGet("{id:int}")]
 	public async Task<IActionResult> GetProductById(int id)
 	{
 		string cacheKey = $"product:{id}";
@@ -49,8 +52,8 @@ public class ProductController : ControllerBase
 		await _cache.SetAsync(cacheKey, dto, TimeSpan.FromMinutes(10L));
 		return Ok(dto);
 	}
-
-	[HttpPost]
+    [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin}")]
+    [HttpPost]
 	public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
 	{
 		_logger.LogInformation("Creating a new product");
@@ -73,8 +76,8 @@ public class ProductController : ControllerBase
 		}
 	}
 
-	[HttpGet]
-	[HttpGet]
+    [AllowAnonymous]
+    [HttpGet]
 	public async Task<IActionResult> GetAllProducts()
 	{
 		List<ProductDto> cachedProducts = await _cache.GetAsync<List<ProductDto>>("products");

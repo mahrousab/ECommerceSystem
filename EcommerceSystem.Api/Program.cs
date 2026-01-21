@@ -9,10 +9,12 @@ using EcommerceSystem.Api.Middlewares;
 using EcommerceSystem.Application.DTOS;
 using EcommerceSystem.Domain.Models;
 using EcommerceSystem.Infrastructure.Data;
+using EcommerceSystem.Infrastructure.Services;
 using ECommerceSystem.Security.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.Tokens;
@@ -43,6 +45,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageReposioty>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+
 builder.Services.AddAutoMapper(delegate (IMapperConfigurationExpression cfg)
 {
     cfg.AddProfile<MappingProfile>();
@@ -52,20 +55,31 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ECommerceSystemDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            ),
+
+            ClockSkew = TimeSpan.Zero 
+        };
+
+        
+        
+        
+    });
+
 
 builder.Services.AddStackExchangeRedisCache(delegate (RedisCacheOptions options)
 {
@@ -74,21 +88,32 @@ builder.Services.AddStackExchangeRedisCache(delegate (RedisCacheOptions options)
 builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 builder.Services.ConfigureCors();
 
 //Logging  
 builder.Host.UseSerilog();
+builder.Services.AddAuthorization();
 
+//Authorization Add Policy
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManageProducts", policy =>
+        policy.RequireRole(AppRoles.Admin, AppRoles.SuperAdmin));
+
+    options.AddPolicy("SuperAdminOnly", policy =>
+        policy.RequireRole(AppRoles.SuperAdmin));
+});
 
 
 Log.Logger=new LoggerConfiguration().WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
 
+
 var app = builder.Build();
-
-
-
-
 
 // Enable Swagger (usually only in Development)
 if (app.Environment.IsDevelopment())
@@ -104,6 +129,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
+
 app.UseGlobalExceptionHandling();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -112,7 +138,11 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.All
 });
 app.UseCors("CorsPolicy");
+
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseSerilogRequestLogging();
 app.MapControllers();
 

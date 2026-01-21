@@ -1,14 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Ecommerce.Application.IRepository;
 using EcommerceSystem.Application.DTOS;
 using EcommerceSystem.Domain.Models;
+using ECommerceSystem.Security.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EcommerceSystem.Api.Controllers;
 
+[Authorize(Policy = "ManageProducts")]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoryController : ControllerBase
@@ -60,8 +63,8 @@ public class CategoryController : ControllerBase
 			return StatusCode(500, "Internal server error");
 		}
 	}
-
-	[HttpPost("AddOne")]
+    [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin}")]
+    [HttpPost("AddOne")]
 	public async Task<IActionResult> CreateCategory(int id, [FromBody] CategoryDto category)
 	{
 		_logger.LogInformation("Creating a new category");
@@ -80,8 +83,8 @@ public class CategoryController : ControllerBase
 		
 		
 	}
-
-	[HttpPut]
+    [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin}")]
+    [HttpPut]
 	public async Task<IActionResult> UpdateCategory([FromBody] CategoryDto category)
 	{
 		_logger.LogInformation("Updating Category");

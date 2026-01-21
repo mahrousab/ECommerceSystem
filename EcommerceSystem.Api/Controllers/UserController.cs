@@ -3,6 +3,8 @@ using Ecommerce.Application.IRepository;
 using Ecommerce.Domain.Models;
 using EcommerceSystem.Application.DTOS;
 using EcommerceSystem.Domain.Models;
+using ECommerceSystem.Security.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceSystem.Api.Controllers;
 
+[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.SuperAdmin}")]
 [Route("api/[controller]")]
 [ApiController]
 public class UserController : ControllerBase

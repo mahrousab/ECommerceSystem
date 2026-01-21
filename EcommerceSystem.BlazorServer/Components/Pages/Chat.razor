@@ -1,0 +1,48 @@
+﻿@page "/chat"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Nav
+
+<h3>Simple Chat</h3>
+
+<input @bind="message" placeholder="Type message..." />
+<button @onclick="Send">Send</button>
+
+<ul>
+    @foreach (var msg in messages)
+    {
+        <li>@msg</li>
+    }
+</ul>
+
+@code {
+    HubConnection hub;
+    string message = "";
+    List<string> messages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        hub = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/chatHub"))
+            .Build();
+
+        hub.On<string>("ReceiveMessage", msg =>
+        {
+            messages.Add(msg);
+            InvokeAsync(StateHasChanged);
+        });
+        hub.On<string>("ReceivePrivateMessage", msg =>
+{
+    messages.Add($"(Private) {msg}");
+    InvokeAsync(StateHasChanged);
+});
+
+
+        await hub.StartAsync();
+    }
+
+    async Task Send()
+    {
+        await hub.SendAsync("SendMessage", message);
+        message = "";
+    }
+}
