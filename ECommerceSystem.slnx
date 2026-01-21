@@ -5,4 +5,5 @@
   <Project Path="EcommerceSystem.Domain/EcommerceSystem.Domain.csproj" />
   <Project Path="EcommerceSystem.Infrastructure/EcommerceSystem.Infrastructure.csproj" />
   <Project Path="ECommerceSystem.Security/ECommerceSystem.Security.csproj" Id="f8fb208c-ade3-4be7-9a64-7b87f1d2c383" />
+  <Project Path="EcommerceSystem.Tests/EcommerceSystem.Tests.csproj" Id="cfe1bb47-59e9-463f-8bd6-a1c9d577cb65" />
 </Solution>
